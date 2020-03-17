@@ -69,7 +69,7 @@ export default {
       return this.customSelections(this.flattenFields.filter((x) => x.value).map((x) => x.value));
     },
     title() {
-      return this.item && this.item.id ? 'Редактирование' : 'Создание';
+      return this.itemId ? 'Редактирование' : 'Создание';
     },
   },
   watch: {
