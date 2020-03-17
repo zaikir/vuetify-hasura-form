@@ -1,0 +1,46 @@
+{
+  "name": "vuetify-hasura-form",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZaidulinKirill/vuetify-hasura-form.git"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "vue",
+    "vuejs",
+    "form",
+    "hasura",
+    "vuetify"
+  ],
+  "author": "Zaidulin Kirill <zaidulinkirill@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ZaidulinKirill/vuetify-hasura-form/issues"
+  },
+  "homepage": "https://github.com/ZaidulinKirill/vuetify-hasura-form#readme",
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.2.0",
+    "@vue/cli-plugin-eslint": "^4.2.0",
+    "@vue/cli-plugin-unit-jest": "^4.2.0",
+    "@vue/cli-service": "^4.2.0",
+    "@vue/eslint-config-airbnb": "^5.0.2",
+    "@vue/test-utils": "1.0.0-beta.31",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-vue": "^6.1.2",
+    "vue": "^2.6.11",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "dependencies": {
+    "graphql-tag": "^2.10.3"
+  }
+}

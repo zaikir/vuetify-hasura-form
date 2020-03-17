@@ -1,1 +1,1 @@
-# vuetify-hasura-form
+# vuetify-hasura-table
