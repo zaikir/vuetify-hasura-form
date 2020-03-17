@@ -113,7 +113,7 @@ export default {
             },
           });
 
-          this.$emit('submitted', { itemId: id, item });
+          this.$emit('submit', { item: { id } });
         } else {
           await this.$apollo.mutate({
             mutation: gql`mutation Insert($id: uuid!, $item: Category_set_input!) {
@@ -131,7 +131,7 @@ export default {
             },
           });
 
-          this.$emit('submitted', { itemId: this.itemId, item });
+          this.$emit('submit', { item: { ...item, id: this.itemId } });
         }
 
         this.fetchedItem = null;
@@ -151,6 +151,7 @@ export default {
     const totalProps = {
       ...this.$props,
       ...this.$attrs,
+      value: this.item,
       skeletonLoading,
     };
 
@@ -166,14 +167,19 @@ export default {
         ref: 'form',
         props: totalProps,
         scopedSlots: totalScopedSlots,
-        on: this.$listeners,
-      }, this.$children),
+        on: {
+          ...this.$listeners,
+          submit: this.onSubmit,
+        },
+      }),
     ]);
 
     const actions = this.$scopedSlots.actions && this.$scopedSlots.actions({
-      item: this.item,
+      item: {
+        ...this.item,
+        id: this.itemId,
+      },
       isNew: !!this.item.id,
-      itemId: this.itemId,
       isSaving: this.isSaving,
       submit: this.submit,
     });
