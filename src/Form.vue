@@ -53,6 +53,10 @@ export default {
       result() {
         this.initialLoading = false;
       },
+      error(error) {
+        const errorText = wrapGraphqlError(error);
+        this.emitError(errorText, error);
+      },
       skip() {
         return !this.itemId;
       },
