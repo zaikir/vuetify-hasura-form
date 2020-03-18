@@ -118,15 +118,11 @@ export default {
               }
             }`),
             variables: { items: [processedItem] },
-            error(error) {
-              const errorText = wrapGraphqlError(error);
-              this.emitError(errorText, error);
-            },
           });
 
           this.$emit('submit', { item: { id } });
         } else {
-          await this.$apollo.mutate({
+          this.$apollo.mutate({
             mutation: gql(`mutation Insert($id: ${this.primaryKeyType}, $item: ${this.source}_set_input!) {
               update_${this.source} (where: {id: {_eq: $id}}, _set: $item) {
                 affected_rows
@@ -146,6 +142,10 @@ export default {
         }
 
         this.fetchedItem = null;
+      }
+      catch(error) {
+        const errorText = wrapGraphqlError(error);
+        this.emitError(errorText, error);
       } finally {
         this.isSaving = false;
       }
