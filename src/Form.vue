@@ -179,7 +179,7 @@ export default {
         ...this.item,
         id: this.itemId,
       },
-      isNew: !!this.item.id,
+      isNew: !!this.itemId,
       isSaving: this.isSaving,
       submit: this.submit,
     });
