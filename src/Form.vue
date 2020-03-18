@@ -9,6 +9,10 @@ import { flatFields, wrapGraphqlError } from './utils';
 
 export default {
   props: {
+    value: {
+      type: Object,
+      default: () => ({}),
+    },
     source: {
       type: String,
       required: true,
@@ -75,7 +79,10 @@ export default {
   watch: {
     fetchedItem: {
       handler() {
-        this.item = this.fetchedItem || {};
+        this.item = {
+          ...this.value || {},
+          ...this.fetchedItem || {},
+        };
       },
       immediate: true,
     },
