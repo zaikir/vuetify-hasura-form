@@ -36,6 +36,10 @@ export default {
       type: Function,
       default: (x) => x,
     },
+    preMutation: {
+      type: Function,
+      default: (x) => x,
+    },
     primaryKey: {
       type: String,
       default: 'id',
@@ -113,10 +117,10 @@ export default {
     async onSubmit(item) {
       try {
         this.isSaving = true;
-        const processedItem = {
+        const processedItem = this.preMutation({
           ...item,
           __typename: undefined,
-        };
+        });
 
         if (!this.itemId) {
           const { data: { [`insert_${this.source}`]: { returning: { id } } } } = await this.$apollo.mutate({
