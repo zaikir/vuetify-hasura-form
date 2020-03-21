@@ -96,8 +96,10 @@ export default {
   },
   watch: {
     itemId: {
-      handler() {
-        this.initialLoading = true;
+      handler(val) {
+        if (val) {
+          this.initialLoading = true;
+        }
       },
       immediate: true,
     },
