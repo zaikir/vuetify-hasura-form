@@ -79,6 +79,8 @@ export default {
       fetchedItem: null,
       item: {},
       isSaving: false,
+      submittedCallback: null,
+      initialLoading: false,
     };
   },
   computed: {
@@ -93,6 +95,12 @@ export default {
     },
   },
   watch: {
+    itemId: {
+      handler() {
+        this.initialLoading = true;
+      },
+      immediate: true,
+    },
     fetchedItem: {
       handler() {
         this.item = {
@@ -105,7 +113,8 @@ export default {
     },
   },
   methods: {
-    submit() {
+    submit(callback) {
+      this.submittedCallback = callback;
       this.$refs.form.submit();
     },
     emitError(errorText, error) {
@@ -151,10 +160,13 @@ export default {
             },
           });
 
-          this.$emit('submit', { item: { ...item, id: this.itemId } });
-        }
+          const callbackData = { item: { ...item, id: this.itemId } };
+          this.$emit('submit', callbackData);
 
-        this.fetchedItem = null;
+          if (this.submittedCallback) {
+            this.submittedCallback(callbackData);
+          }
+        }
       } catch (error) {
         const errorText = wrapGraphqlError(error);
         this.emitError(errorText, error);
@@ -169,7 +181,7 @@ export default {
       ...params,
     };
 
-    const skeletonLoading = this.$apollo.loading;
+    const skeletonLoading = this.initialLoading;
 
     const totalProps = {
       ...this.$props,
