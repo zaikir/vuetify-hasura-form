@@ -99,6 +99,7 @@ export default {
           ...this.value || {},
           ...this.fetchedItem || {},
         };
+        this.$emit('input', this.item);
       },
       immediate: true,
     },
