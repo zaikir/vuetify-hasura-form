@@ -24,6 +24,10 @@ export default {
     itemId: {
       type: null,
     },
+    cardProps: {
+      type: Object,
+      default: () => ({}),
+    },
     customSelections: {
       type: Function,
       default: (x) => x,
@@ -142,8 +146,7 @@ export default {
         }
 
         this.fetchedItem = null;
-      }
-      catch(error) {
+      } catch (error) {
         const errorText = wrapGraphqlError(error);
         this.emitError(errorText, error);
       } finally {
@@ -195,7 +198,9 @@ export default {
       submit: this.submit,
     });
 
-    return h(VCard, [
+    return h(VCard, {
+      props: this.cardProps,
+    }, [
       title,
       text,
       actions,
