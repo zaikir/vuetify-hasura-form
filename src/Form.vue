@@ -24,6 +24,10 @@ export default {
     itemId: {
       type: null,
     },
+    flat: {
+      type: Boolean,
+      default: false,
+    },
     cardProps: {
       type: Object,
       default: () => ({}),
@@ -199,7 +203,10 @@ export default {
     });
 
     return h(VCard, {
-      props: this.cardProps,
+      props: {
+        flat: this.flat,
+        ...this.cardProps,
+      },
     }, [
       title,
       text,
