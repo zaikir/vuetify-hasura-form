@@ -134,7 +134,7 @@ export default {
 
           this.$emit('submit', { item: { id } });
         } else {
-          this.$apollo.mutate({
+          await this.$apollo.mutate({
             mutation: gql(`mutation Insert($id: ${this.primaryKeyType}, $item: ${this.source}_set_input!) {
               update_${this.source} (where: {id: {_eq: $id}}, _set: $item) {
                 affected_rows
