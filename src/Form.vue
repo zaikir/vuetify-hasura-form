@@ -120,7 +120,7 @@ export default {
   },
   methods: {
     submit(callback) {
-      this.submittedCallback = callback;
+      this.submittedCallback = typeof callback === 'function' && callback;
       this.$refs.form.submit();
     },
     emitError(errorText, error) {
