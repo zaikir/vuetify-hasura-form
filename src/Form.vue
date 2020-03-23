@@ -36,6 +36,10 @@ export default {
       type: Function,
       default: (x) => x,
     },
+    mutation: {
+      type: Function,
+      default: null,
+    },
     preMutation: {
       type: Function,
       default: (x) => x,
@@ -134,20 +138,36 @@ export default {
           __typename: undefined,
         });
 
+        const submit = (data) => {
+          this.$emit('submit', data);
+
+          if (this.submittedCallback) {
+            this.submittedCallback(data);
+          }
+        };
+
         if (!this.itemId) {
-          const { data: { [`insert_${this.source}`]: { returning: { id } } } } = await this.$apollo.mutate({
-            mutation: gql(`mutation Insert($items: [${this.source}_insert_input!]!) {
+          if (this.mutation) {
+            const { id } = await this.mutation({ item: processedItem, isNew: true });
+            submit({ item: { id } });
+          } else {
+            const { data: { [`insert_${this.source}`]: { returning: { id } } } } = await this.$apollo.mutate({
+              mutation: gql(`mutation InsertItem($items: [${this.source}_insert_input!]!) {
               insert_${this.source} (objects: $items) {
                 returning { id }
               }
             }`),
-            variables: { items: [processedItem] },
-          });
+              variables: { items: [processedItem] },
+            });
 
-          this.$emit('submit', { item: { id } });
+            submit({ item: { id } });
+          }
+        } else if (this.mutation) {
+          await this.mutation({ item: processedItem, isNew: true });
+          submit({ item: { ...item, id: this.itemId } });
         } else {
           await this.$apollo.mutate({
-            mutation: gql(`mutation Insert($id: ${this.primaryKeyType}, $item: ${this.source}_set_input!) {
+            mutation: gql(`mutation UpdateItem($id: ${this.primaryKeyType}, $item: ${this.source}_set_input!) {
               update_${this.source} (where: {id: {_eq: $id}}, _set: $item) {
                 affected_rows
               }
@@ -162,16 +182,15 @@ export default {
             },
           });
 
-          const callbackData = { item: { ...item, id: this.itemId } };
-          this.$emit('submit', callbackData);
-
-          if (this.submittedCallback) {
-            this.submittedCallback(callbackData);
-          }
+          submit({ item: { ...item, id: this.itemId } });
         }
       } catch (error) {
-        const errorText = wrapGraphqlError(error);
-        this.emitError(errorText, error);
+        if (this.mutation) {
+          this.emitError(error.message, error);
+        } else {
+          const errorText = wrapGraphqlError(error);
+          this.emitError(errorText, error);
+        }
       } finally {
         this.isSaving = false;
       }
