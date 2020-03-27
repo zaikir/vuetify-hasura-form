@@ -57,7 +57,7 @@ export default {
     fetchedItem: {
       query() {
         return gql(`query FetchItem($id: ${this.primaryKeyType}) { ${this.source}_by_pk (${this.primaryKey}: $id) {
-          id ${this.selections.join(' ')}
+          ${this.primaryKey} ${this.selections.join(' ')}
         } }`);
       },
       variables() {
@@ -148,32 +148,36 @@ export default {
 
         if (!this.itemId) {
           if (this.mutation) {
-            const { id } = await this.mutation({ item: processedItem, isNew: true });
-            submit({ item: { id } });
+            const { [this.primaryKey]: id } = await this.mutation({ item: processedItem, isNew: true });
+            submit({
+              item: {
+                [this.primaryKey]: id,
+              },
+            });
           } else {
-            const { data: { [`insert_${this.source}`]: { returning: { id } } } } = await this.$apollo.mutate({
+            const { data: { [`insert_${this.source}`]: { returning: { [this.primaryKey]: id } } } } = await this.$apollo.mutate({
               mutation: gql(`mutation InsertItem($items: [${this.source}_insert_input!]!) {
               insert_${this.source} (objects: $items) {
-                returning { id }
+                returning { ${this.primaryKey} }
               }
             }`),
               variables: { items: [processedItem] },
             });
 
-            submit({ item: { id } });
+            submit({ item: { [this.primaryKey]: id } });
           }
         } else if (this.mutation) {
           await this.mutation({ item: processedItem, isNew: true });
-          submit({ item: { ...item, id: this.itemId } });
+          submit({ item: { ...item, [this.primaryKey]: this.itemId } });
         } else {
           await this.$apollo.mutate({
             mutation: gql(`mutation UpdateItem($id: ${this.primaryKeyType}, $item: ${this.source}_set_input!) {
-              update_${this.source} (where: {id: {_eq: $id}}, _set: $item) {
+              update_${this.source} (where: {${this.primaryKey}: {_eq: $id}}, _set: $item) {
                 affected_rows
               }
             }`),
             variables: {
-              id: item.id,
+              id: item[this.primaryKey],
               item: processedItem,
             },
             error(error) {
@@ -182,7 +186,7 @@ export default {
             },
           });
 
-          submit({ item: { ...item, id: this.itemId } });
+          submit({ item: { ...item, [this.primaryKey]: this.itemId } });
         }
       } catch (error) {
         if (this.mutation) {
