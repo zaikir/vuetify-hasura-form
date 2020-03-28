@@ -167,7 +167,7 @@ export default {
             submit({ item: { [this.primaryKey]: id } });
           }
         } else if (this.mutation) {
-          await this.mutation({ item: processedItem, isNew: true });
+          await this.mutation({ item: processedItem, isNew: false });
           submit({ item: { ...item, [this.primaryKey]: this.itemId } });
         } else {
           await this.$apollo.mutate({
