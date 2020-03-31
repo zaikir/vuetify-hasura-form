@@ -155,7 +155,7 @@ export default {
               },
             });
           } else {
-            const { data: { [`insert_${this.source}`]: { returning: { [this.primaryKey]: id } } } } = await this.$apollo.mutate({
+            const { data: { [`insert_${this.source}`]: { returning: [{ [this.primaryKey]: id }] } } } = await this.$apollo.mutate({
               mutation: gql(`mutation InsertItem($items: [${this.source}_insert_input!]!) {
               insert_${this.source} (objects: $items) {
                 returning { ${this.primaryKey} }
