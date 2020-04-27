@@ -44,6 +44,10 @@ export default {
       type: Function,
       default: (x) => x,
     },
+    postMutation: {
+      type: Function,
+      default: () => {},
+    },
     primaryKey: {
       type: String,
       default: 'id',
@@ -92,7 +96,10 @@ export default {
       return flatFields(this.fields);
     },
     selections() {
-      return this.customSelections(this.flattenFields.filter((x) => x.value).map((x) => x.value));
+      return this.customSelections(this.flattenFields.filter((x) => x.selectable !== false && x.value).map((x) => x.selector || x.value));
+    },
+    editableFields() {
+      return this.flattenFields.filter((x) => x.editable !== false && x.value).map((x) => x.value);
     },
     title() {
       return this.itemId ? 'Редактирование' : 'Создание';
@@ -134,11 +141,24 @@ export default {
       try {
         this.isSaving = true;
         const processedItem = this.preMutation({
-          ...item,
+          ...Object.fromEntries(
+            Object.entries(item).filter(
+              ([key, value]) => this.editableFields.includes(key),
+            ),
+          ),
           __typename: undefined,
         });
 
-        const submit = (data) => {
+        const submit = async (data) => {
+          await this.postMutation({
+            ...data,
+            item: {
+              ...data.item,
+              ...item,
+            },
+            prevItem: this.fetchedItem,
+          });
+
           this.$emit('submit', data);
 
           if (this.submittedCallback) {
@@ -149,7 +169,7 @@ export default {
         if (!this.itemId) {
           if (this.mutation) {
             const { [this.primaryKey]: id } = await this.mutation({ item: processedItem, isNew: true });
-            submit({
+            await submit({
               item: {
                 [this.primaryKey]: id,
               },
@@ -164,11 +184,11 @@ export default {
               variables: { items: [processedItem] },
             });
 
-            submit({ item: { [this.primaryKey]: id } });
+            await submit({ item: { [this.primaryKey]: id } });
           }
         } else if (this.mutation) {
           await this.mutation({ item: processedItem, isNew: false });
-          submit({ item: { ...item, [this.primaryKey]: this.itemId } });
+          await submit({ item: { ...item, [this.primaryKey]: this.itemId } });
         } else {
           await this.$apollo.mutate({
             mutation: gql(`mutation UpdateItem($id: ${this.primaryKeyType}, $item: ${this.source}_set_input!) {
@@ -186,7 +206,7 @@ export default {
             },
           });
 
-          submit({ item: { ...item, [this.primaryKey]: this.itemId } });
+          await submit({ item: { ...item, [this.primaryKey]: this.itemId } });
         }
       } catch (error) {
         if (this.mutation) {
