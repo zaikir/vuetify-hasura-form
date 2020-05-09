@@ -143,7 +143,7 @@ export default {
         const processedItem = this.preMutation({
           ...Object.fromEntries(
             Object.entries(item).filter(
-              ([key, value]) => this.editableFields.includes(key),
+              ([key, value]) => this.editableFields.includes(key) || !this.flattenFields.includes(key),
             ),
           ),
           __typename: undefined,
