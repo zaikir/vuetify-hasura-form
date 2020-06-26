@@ -150,19 +150,21 @@ export default {
         });
 
         const submit = async (data) => {
-          await this.postMutation({
+          const submitData = {
             ...data,
             item: {
               ...data.item,
               ...item,
             },
             prevItem: this.fetchedItem,
-          });
+          };
 
-          this.$emit('submit', data);
+          await this.postMutation(submitData);
+
+          this.$emit('submit', submitData);
 
           if (this.submittedCallback) {
-            this.submittedCallback(data);
+            this.submittedCallback(submitData);
           }
         };
 
