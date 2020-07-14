@@ -4,7 +4,7 @@ import Vue from 'vue';
 import {
   VCard, VCardTitle, VCardText,
 } from 'vuetify/lib/components';
-import { flatFields, wrapGraphqlError } from './utils';
+import { flatFields, wrapGraphqlError, translate } from './utils';
 
 
 export default {
@@ -102,7 +102,9 @@ export default {
       return this.flattenFields.filter((x) => x.editable !== false && x.value).map((x) => x.value);
     },
     title() {
-      return this.itemId ? 'Редактирование' : 'Создание';
+      return this.itemId
+        ? translate(this.$vuetify, 'titleEdit', 'Edit')
+        : translate(this.$vuetify, 'titleCreate', 'Create');
     },
   },
   watch: {
