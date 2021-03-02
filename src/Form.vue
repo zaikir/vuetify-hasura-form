@@ -142,7 +142,7 @@ export default {
     async onSubmit(item) {
       try {
         this.isSaving = true;
-        const processedItem = this.preMutation({
+        const processedItem = await this.preMutation({
           ...Object.fromEntries(
             Object.entries(item).filter(
               ([key, value]) => this.editableFields.includes(key) || !this.flattenFields.map((x) => x.value).includes(key),
