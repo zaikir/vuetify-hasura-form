@@ -48,6 +48,10 @@ export default {
       type: Function,
       default: () => {},
     },
+    postFetch: {
+      type: Function,
+      default: (x) => x,
+    },
     primaryKey: {
       type: String,
       default: 'id',
@@ -117,11 +121,11 @@ export default {
       immediate: true,
     },
     fetchedItem: {
-      handler() {
-        this.item = {
+      async handler() {
+        this.item = await this.postFetch({
           ...this.value || {},
           ...this.fetchedItem || {},
-        };
+        });
         this.$emit('input', this.item);
       },
       immediate: true,
